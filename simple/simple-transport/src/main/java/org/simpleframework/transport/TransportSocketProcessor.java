@@ -19,6 +19,7 @@
 package org.simpleframework.transport;
 
 import java.io.IOException;
+import java.util.concurrent.ExecutorService;
 
 import org.simpleframework.common.thread.ConcurrentExecutor;
 import org.simpleframework.common.thread.Daemon;
@@ -129,6 +130,25 @@ public class TransportSocketProcessor implements SocketProcessor {
       this.reactor = new ExecutorReactor(executor);
       this.factory = new OperationFactory(processor, reactor, buffer, threshold, client);
       this.cleaner = new ServerCleaner(processor, executor, reactor);
+   }
+
+   /**
+    * Constructor for the <code>TransportSocketProcessor</code> object. 
+    * The transport processor is used to process plain connections
+    * and wrap those connections in a <code>Transport</code> that
+    * can be used to send and receive data to and from.
+    * 
+    * @param processor this is used to process transports
+    * @param executor the executor to use
+    * @param buffer this is the initial size of the output buffer      
+    * @param threshold this is the maximum size of the output buffer
+    * @param client determines if the SSL handshake is for a client
+    */
+   public TransportSocketProcessor(TransportProcessor processor, ExecutorService executor, int buffer, boolean client) throws IOException {
+      this.executor = new ConcurrentExecutor(executor);     
+      this.reactor = new ExecutorReactor(executor);
+      this.factory = new OperationFactory(processor, reactor, buffer, 20480, client);
+      this.cleaner = new ServerCleaner(processor, this.executor, reactor);
    }
 
    /**

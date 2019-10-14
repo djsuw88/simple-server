@@ -5,11 +5,10 @@
     <artifactId>simple</artifactId>
     <version>1.0</version>
   </parent>
-  <groupId>com.github.dsjuw88</groupId>
+  <groupId>com.github.djsuw88</groupId>
   <artifactId>simple-common</artifactId>
   <packaging>jar</packaging>
   <version>1.0</version>
-  <name>Simple Common</name>
   <dependencies>
     <dependency>
       <groupId>junit</groupId>
@@ -18,14 +17,6 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-  <reporting>
-    <plugins>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>cobertura-maven-plugin</artifactId>
-      </plugin>
-    </plugins>
-  </reporting>
   <build>
     <plugins>
       <plugin>
@@ -36,6 +27,7 @@
           <target>1.8</target>
         </configuration>
       </plugin>
+<!--      
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-source-plugin</artifactId>
@@ -64,6 +56,7 @@
           </execution>
         </executions>
       </plugin>
+-->
     </plugins>
   </build>
 </project>

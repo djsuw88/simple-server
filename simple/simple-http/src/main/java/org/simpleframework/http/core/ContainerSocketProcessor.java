@@ -19,13 +19,14 @@
 package org.simpleframework.http.core;
 
 import java.io.IOException;
+import java.util.concurrent.ExecutorService;
 
 import org.simpleframework.common.buffer.Allocator;
 import org.simpleframework.common.buffer.FileAllocator;
+import org.simpleframework.transport.Socket;
+import org.simpleframework.transport.SocketProcessor;
 import org.simpleframework.transport.TransportProcessor;
 import org.simpleframework.transport.TransportSocketProcessor;
-import org.simpleframework.transport.SocketProcessor;
-import org.simpleframework.transport.Socket;
 
 /**
  * The <code>ContainerSocketProcessor</code> object is a connector
@@ -128,6 +129,21 @@ public class ContainerSocketProcessor implements SocketProcessor {
    public ContainerSocketProcessor(Container container, Allocator allocator, int count, int select) throws IOException {
      this.processor = new ContainerTransportProcessor(container, allocator, count, select);
      this.adapter = new TransportSocketProcessor(processor, count); 
+   }  
+
+   /**
+    * Constructor for the <code>ContainerSocketProcessor</code> object. 
+    * The connector created will collect HTTP requests from the pipelines
+    * provided and dispatch those requests to the provided container.
+    * 
+    * @param container this is the container used to service requests
+    * @param allocator this is the allocator used to create buffers
+    * @param executor executor to use for thread pools
+    * @param buffer the buffer size
+    */   
+   public ContainerSocketProcessor(Container container, Allocator allocator, ExecutorService executor, int buffer) throws IOException {
+     this.processor = new ContainerTransportProcessor(container, allocator, executor);
+     this.adapter = new TransportSocketProcessor(processor, executor, buffer, false); 
    }  
 
    /**

@@ -19,6 +19,7 @@
 package org.simpleframework.http.socket.service;
 
 import java.io.IOException;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 import org.simpleframework.http.Request;
 import org.simpleframework.http.Response;
@@ -82,6 +83,23 @@ public class RouterContainer implements Container {
     */
    public RouterContainer(Container container, Router router, int threads, long ping) throws IOException {
       this.dispatcher = new ServiceDispatcher(router, threads, ping);
+      this.container = container;
+      this.router = router;
+   }
+   
+   /**
+    * Constructor for the <code>RouterContainer</code> object. This
+    * requires a container to delegate traditional requests to and
+    * a <code>Router</code> implementation which can be used to 
+    * select a service to dispatch a WebSocket session to.
+    * 
+    * @param container this is the container to delegate to
+    * @param router this is the router used to select services
+    * @param executor the executor to use for scheduling
+    * @param ping this is the frequency to send ping frames with
+    */
+   public RouterContainer(Container container, Router router, ScheduledThreadPoolExecutor executor, long ping) throws IOException {
+      this.dispatcher = new ServiceDispatcher(router, executor, ping);
       this.container = container;
       this.router = router;
    }

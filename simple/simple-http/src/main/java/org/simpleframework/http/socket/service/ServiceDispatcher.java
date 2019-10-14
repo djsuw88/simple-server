@@ -19,6 +19,7 @@
 package org.simpleframework.http.socket.service;
 
 import java.io.IOException;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 import org.simpleframework.common.thread.ConcurrentScheduler;
 import org.simpleframework.common.thread.Scheduler;
@@ -81,6 +82,22 @@ class ServiceDispatcher {
     */
    public ServiceDispatcher(Router router, int threads, long ping) throws IOException {
       this.scheduler = new ConcurrentScheduler(FrameCollector.class, threads);      
+      this.reactor = new ExecutorReactor(scheduler);
+      this.builder = new SessionBuilder(scheduler, reactor, ping);
+      this.dispatcher = new SessionDispatcher(builder, router);      
+   }
+
+   /**
+    * Constructor for the <code>ServiceDispatcher</code> object. The
+    * dispatcher created will dispatch WebSocket sessions to a service
+    * using the provided <code>Router</code> instance. 
+    * 
+    * @param router this is the router used to select a service
+    * @param executor the executor to use for the dispatcher
+    * @param ping this is the frequency used to send ping frames
+    */
+   public ServiceDispatcher(Router router, ScheduledThreadPoolExecutor executor, long ping) throws IOException {
+      this.scheduler = new ConcurrentScheduler(executor);
       this.reactor = new ExecutorReactor(scheduler);
       this.builder = new SessionBuilder(scheduler, reactor, ping);
       this.dispatcher = new SessionDispatcher(builder, router);      

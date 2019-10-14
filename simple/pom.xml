@@ -4,7 +4,7 @@
   <artifactId>simple</artifactId>
   <packaging>pom</packaging>
   <version>1.0</version>
-  <name>Simple</name>
+  <name>simple</name>
   <modules>
     <module>simple-common</module>    
     <module>simple-transport</module>

@@ -19,11 +19,12 @@
 package org.simpleframework.http.core;
 
 import java.io.IOException;
+import java.util.concurrent.ExecutorService;
 
 import org.simpleframework.common.buffer.Allocator;
-import org.simpleframework.transport.TransportProcessor;
 import org.simpleframework.transport.Transport;
 import org.simpleframework.transport.TransportChannel;
+import org.simpleframework.transport.TransportProcessor;
 
 /**
  * The <code>ContainerProcessor</code> object is used to create 
@@ -69,6 +70,20 @@ public class ContainerTransportProcessor implements TransportProcessor {
     */
    public ContainerTransportProcessor(Container container, Allocator allocator, int count, int select) throws IOException {
      this.controller = new ContainerController(container, allocator, count, select);
+   }        
+
+   /**
+    * Constructor for the <code>ContainerProcessor</code> object.
+    * This is used to create a processor which will convert the
+    * provided transport objects to channels, which can then be
+    * processed by the controller and dispatched to the container.
+    * 
+    * @param container the container to dispatch requests to
+    * @param allocator this is the allocator used to buffer data
+    * @param executor the executor to use
+    */
+   public ContainerTransportProcessor(Container container, Allocator allocator, ExecutorService executor) throws IOException {
+     this.controller = new ContainerController(container, allocator, executor);
    }        
 
    /**

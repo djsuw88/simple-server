@@ -21,6 +21,7 @@ package org.simpleframework.common.thread;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -40,19 +41,19 @@ import java.util.concurrent.TimeUnit;
 class ExecutorQueue {
    
    /**
-    * This is the task queue that contains tasks due to execute.
-    */
-   private final BlockingQueue<Runnable> queue;
-   
-   /**
     * This is the actual thread pool implementation used.
     */
-   private final ThreadPoolExecutor executor;
+   private final ExecutorService executor;
+   
+   /**
+    * True if the executor needs to be cleaned up on exit.
+    */
+   private boolean cleanupExecutor;
    
    /**
     * This is used to create the pool worker threads.
     */
-   private final ThreadFactory factory;
+   private ThreadFactory factory;
    
    /**
     * Constructor for the <code>ExecutorQueue</code> object. This is
@@ -81,9 +82,22 @@ class ExecutorQueue {
     * @param unit this is the time unit used for the duration 
     */    
    public ExecutorQueue(Class type, int rest, int active, long duration, TimeUnit unit) {
-      this.queue = new LinkedBlockingQueue<Runnable>();
+      BlockingQueue<Runnable> queue = new LinkedBlockingQueue<Runnable>();
       this.factory = new DaemonFactory(type);
       this.executor = new ThreadPoolExecutor(rest, active, duration, unit, queue, factory);
+      this.cleanupExecutor = true;
+   }
+   
+   /**
+    * Constructor for the <code>ExecutorQueue</code> object. This is
+    * used to create a pool of threads that can be used to execute
+    * arbitrary <code>Runnable</code> tasks. If the threads are
+    * busy this will simply enqueue the tasks and return.
+    *
+    * @param executor the executor to wrap
+    */    
+   public ExecutorQueue(ExecutorService executor) {
+      this.executor = executor;
    }
    
    /**
@@ -116,7 +130,7 @@ class ExecutorQueue {
     * @param wait the number of milliseconds to wait for it to stop
     */   
    public void stop(long wait) {
-      if(!executor.isTerminated()) {
+      if(cleanupExecutor && !executor.isTerminated()) {
          try {
             executor.shutdown();
             executor.awaitTermination(wait, MILLISECONDS);

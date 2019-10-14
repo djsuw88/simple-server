@@ -21,6 +21,7 @@ package org.simpleframework.http.core;
 import static java.nio.channels.SelectionKey.OP_READ;
 
 import java.io.IOException;
+import java.util.concurrent.ExecutorService;
 
 import org.simpleframework.common.buffer.Allocator;
 import org.simpleframework.common.thread.ConcurrentExecutor;
@@ -82,6 +83,24 @@ class ContainerController implements Controller {
       this.executor = new ConcurrentExecutor(RequestDispatcher.class, count); 
       this.collect = new ConcurrentExecutor(RequestReader.class, count);
       this.reactor = new ExecutorReactor(collect, select);     
+      this.allocator = allocator;
+      this.container = container;
+   }
+
+   /**
+    * Constructor for the <code>ContainerController</code> object. This
+    * is used to create a controller which will collect and dispatch
+    * requests using two thread pools. The first is used to collect
+    * the requests, the second is used to service those requests.
+    * 
+    * @param container this is the container used to service requests
+    * @param allocator this is used to allocate any buffers needed
+    * @param executor the executor to use
+    */
+   public ContainerController(Container container, Allocator allocator, ExecutorService executor) throws IOException {
+      this.executor = new ConcurrentExecutor(executor); 
+      this.collect = new ConcurrentExecutor(executor);
+      this.reactor = new ExecutorReactor(collect, 1);
       this.allocator = allocator;
       this.container = container;
    }

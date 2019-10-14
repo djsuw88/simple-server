@@ -40,9 +40,14 @@ class SchedulerQueue {
    private final ScheduledThreadPoolExecutor executor;
    
    /**
+    * True if the executor was created internally and thus needs cleanup.
+    */
+   private boolean cleanupExecutor;
+   
+   /**
     * This is the factory used to create the worker threads.
     */
-   private final ThreadFactory factory;
+   private ThreadFactory factory;
    
    /**
     * Constructor for the <code>SchedulerQueue</code> object. This 
@@ -56,6 +61,17 @@ class SchedulerQueue {
    public SchedulerQueue(Class type, int size) {
       this.factory = new DaemonFactory(type);
       this.executor = new ScheduledThreadPoolExecutor(size, factory);
+      this.cleanupExecutor = true;
+   }
+   
+   /**
+    * Constructor for the <code>SchedulerQueue</code> object. This 
+    * will use the specified executor to back the queue.
+    * 
+    * @param executor the executor to back the queue with
+    */   
+   public SchedulerQueue(ScheduledThreadPoolExecutor executor) {
+      this.executor = executor;
    }
    
    /**
@@ -115,7 +131,7 @@ class SchedulerQueue {
     * @param wait the number of milliseconds to wait for it to stop
     */   
    public void stop(long wait) {
-      if(!executor.isTerminated()) {
+      if(cleanupExecutor && !executor.isTerminated()) {
          try {
             executor.shutdown();
             executor.awaitTermination(wait, MILLISECONDS);

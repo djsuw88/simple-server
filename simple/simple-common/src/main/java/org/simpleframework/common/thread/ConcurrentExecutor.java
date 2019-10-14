@@ -19,6 +19,7 @@
 package org.simpleframework.common.thread;
 
 import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 
 /**
  * The <code>ConcurrentExecutor</code> object is used to execute tasks
@@ -72,6 +73,18 @@ public class ConcurrentExecutor implements Executor {
     */   
    public ConcurrentExecutor(Class type, int rest, int active) {     
       this.queue = new ExecutorQueue(type, rest, active);
+   }   
+   
+   /**
+    * Constructor for the <code>ConcurrentExecutor</code> object. This 
+    * is used to create a pool of threads that can be used to execute
+    * arbitrary <code>Runnable</code> tasks. If the threads are
+    * busy this will simply enqueue the tasks and return.
+    * 
+    * @param executor the executor to wrap
+    */   
+   public ConcurrentExecutor(ExecutorService executor) {     
+      this.queue = new ExecutorQueue(executor);
    }   
    
    /**

@@ -18,6 +18,7 @@
 
 package org.simpleframework.common.thread;
 
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -58,6 +59,16 @@ public class ConcurrentScheduler implements Scheduler {
     */
    public ConcurrentScheduler(Class type, int size) {
       this.queue = new SchedulerQueue(type, size);
+   }
+
+   /**
+    * Constructor for the <code>ConcurrentScheduler</code> object. 
+    * This will create a scheduler using the specifed executor.
+    * 
+    * @param executor the executor to use
+    */
+   public ConcurrentScheduler(ScheduledThreadPoolExecutor executor) {
+      this.queue = new SchedulerQueue(executor);
    }
 
    /**
