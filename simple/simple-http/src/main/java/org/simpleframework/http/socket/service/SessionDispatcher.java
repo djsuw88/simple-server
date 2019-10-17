@@ -77,10 +77,9 @@ class SessionDispatcher {
       
       try {
          Service service = router.route(request, response);
-         Session session = builder.create(request, response);      
+         Session session = builder.create(request, response, service);      
         
          trace.trace(DISPATCH_SOCKET);
-         service.connect(session);
       } catch(Exception cause) {
          trace.trace(ERROR, cause);
          terminate(request, response);

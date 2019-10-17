@@ -74,11 +74,12 @@ class SessionBuilder {
     * 
     * @param request this is the request associated with this session
     * @param response this is the response associated with this session
+    * @param service the associated service
     * 
     * @return this returns the session associated with the WebSocket
     */
-   public Session create(Request request, Response response) throws Exception {
-      FrameConnection connection = new FrameConnection(request, response, reactor);
+   public Session create(Request request, Response response, Service service) throws Exception {
+      FrameConnection connection = new FrameConnection(request, response, reactor, service);
       ResponseBuilder builder = new ResponseBuilder(request, response);
       StatusChecker checker = new StatusChecker(connection, request, scheduler, ping);
 

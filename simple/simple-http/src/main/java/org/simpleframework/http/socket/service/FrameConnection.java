@@ -86,6 +86,11 @@ class FrameConnection implements FrameChannel {
     * This is used to trace all events that occur on the channel.
     */
    private final Trace trace;
+
+   /**
+    * The service to connect to.
+    */
+   private final Service service;
    
    /**
     * Constructor for the <code>FrameConnection</code> object. This is used
@@ -96,8 +101,9 @@ class FrameConnection implements FrameChannel {
     * @param request this is the initiating request for the WebSocket
     * @param response this is the initiating response for the WebSocket
     * @param reactor this is the reactor used to process frames
+    * @param service the associated service to connect to
     */
-   public FrameConnection(Request request, Response response, Reactor reactor) {
+   public FrameConnection(Request request, Response response, Reactor reactor, Service service) {
       this.encoder = new FrameEncoder(request);  
       this.session = new ServiceSession(this, request, response);
       this.operation = new FrameCollector(encoder, session, request, reactor);
@@ -105,6 +111,7 @@ class FrameConnection implements FrameChannel {
       this.channel = request.getChannel();
       this.writer = channel.getWriter();
       this.trace = channel.getTrace();
+      this.service = service;
    }    
    
    /**
@@ -116,6 +123,9 @@ class FrameConnection implements FrameChannel {
     * @return the session associated with the WebSocket
     */
    public Session open() throws IOException {
+      /* connect to the service before we process any frames */
+      service.connect(session);
+      
       trace.trace(OPEN_SOCKET);
       operation.run();
       return session;
