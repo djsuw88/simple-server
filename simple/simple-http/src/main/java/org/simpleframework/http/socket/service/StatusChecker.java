@@ -154,7 +154,7 @@ class StatusChecker implements Runnable{
       long count = counter.get();
 
       try { 
-         if(count < 3) {
+         if(count < 3000000) {
             trace.trace(WRITE_PING);           
             connection.send(frame);
             counter.getAndIncrement();
