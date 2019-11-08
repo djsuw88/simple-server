@@ -23,15 +23,17 @@ import static org.simpleframework.http.socket.service.ServiceEvent.OPEN_SOCKET;
 
 import java.io.IOException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.simpleframework.http.Request;
 import org.simpleframework.http.Response;
 import org.simpleframework.http.socket.Frame;
+import org.simpleframework.http.socket.FrameChannel;
 import org.simpleframework.http.socket.FrameListener;
 import org.simpleframework.http.socket.Reason;
 import org.simpleframework.http.socket.Session;
-import org.simpleframework.http.socket.FrameChannel;
-import org.simpleframework.transport.Channel;
 import org.simpleframework.transport.ByteWriter;
+import org.simpleframework.transport.Channel;
 import org.simpleframework.transport.reactor.Reactor;
 import org.simpleframework.transport.trace.Trace;
 
@@ -51,6 +53,7 @@ import org.simpleframework.transport.trace.Trace;
  * @author Niall Gallagher
  */
 class FrameConnection implements FrameChannel {
+   static private final Log logger = LogFactory.getLog(FrameConnection.class);
    
    /**
     * The collector is used to collect frames from the TCP channel.
@@ -208,6 +211,7 @@ class FrameConnection implements FrameChannel {
     * @param reason the reason for closing the connection
     */
    public void close(Reason reason) throws IOException {
+      logger.info("Closing websocket with reason: "+reason,new RuntimeException());
       encoder.encode(reason);  
       writer.close();
    }  
@@ -218,6 +222,7 @@ class FrameConnection implements FrameChannel {
     * TCP connection is terminated.
     */
    public void close() throws IOException {
+      logger.info("Closing websocket: "+reason,new RuntimeException());
       encoder.encode(reason);  
       writer.close();
    }

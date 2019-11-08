@@ -3,13 +3,24 @@
   <groupId>com.github.djsuw88</groupId>
   <artifactId>simple</artifactId>
   <packaging>pom</packaging>
-  <version>1.0.1</version>
+  <version>1.0.2</version>
   <name>simple</name>
+
   <modules>
     <module>simple-common</module>    
     <module>simple-transport</module>
     <module>simple-http</module>              
   </modules>
+  
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>commons-logging</groupId>
+        <artifactId>commons-logging</artifactId>
+        <version>1.2</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
 </project>
 
 
